@@ -1,7 +1,8 @@
+import React from "react";
 import config from "../config.json";
 import styled from "styled-components";
 import { CSSReset } from "../src/components/CSSReset";
-import Menu from "../src/components/Menu";
+import Menu from "../src/components/Menu/Menu";
 import { StyledTimeline } from "../src/components/Timeline";
 
 function HomePage(){
@@ -14,6 +15,9 @@ function HomePage(){
     // <Menu></Menu>
     // <Header></Header>
     // <TimeLine></TimeLine>
+
+    const [valorDoFiltro, setValorDoFiltro] = React.useState("");
+    // const valorDoFiltro = "Frost";
     // console.log(config.playlist);
 
     return (
@@ -24,9 +28,10 @@ function HomePage(){
                 flexDirection: "column",
                 flex: 1,
             }}>
-                <Menu />
+                {/* Prop Drilling */}
+                <Menu valorDoFiltro={valorDoFiltro} setValorDoFiltro={setValorDoFiltro} />
                 <Header />
-                <TimeLine playlist={config.playlists}>
+                <TimeLine searchValue={valorDoFiltro} playlist={config.playlists}>
                     Conteudo
                 </TimeLine>     
             </div>
@@ -52,7 +57,6 @@ const StyledHeader = styled.div`
         border-radius: 50%;
     }
     .user-info{
-        margin-top: 50px;
         display: flex;
         align-items: center;
         width: 100%;
@@ -60,10 +64,17 @@ const StyledHeader = styled.div`
         gap: 16px;
     }
 `;
+const StyledBanner = styled.div`
+    background-color: blue;
+    background-image: url(${({ bg }) => bg});
+    /* background-image: url(${config.bg}); */
+    height: 230px;
+`
 function Header(){
     return(
         <StyledHeader>
             {/* <img src="banner" /> */}
+            <StyledBanner bg={config.bg} />
             <section className="user-info">
                 <img src={`https://github.com/${config.github}.png`} />
                 <div>
@@ -79,7 +90,8 @@ function Header(){
     )
 }
 
-function TimeLine(props){
+//o valor do filtro e todos os outros valores da propriedades
+function TimeLine({searchValue, ...props}){
     // console.log("dentro do componente ", props.playlist)
     const playlistsNames = Object.keys(props.playlist)
     // console.log(`nomes aq ${playlistsNames}`)
@@ -93,12 +105,17 @@ function TimeLine(props){
                 // console.log(playlistsName)
                 // console.log(videos) 
                 return (
-                    <section>
+                    <section key={playlistsName}>
                         <h2>{playlistsName}</h2>
                         <div>
-                            {videos.map((video) => {
+                            {videos.filter((video) => {
+                                const titleNormalized = video.title.toLowerCase();
+                                const searchValuesNormalized = searchValue.toLowerCase();
+                                return titleNormalized.includes(searchValuesNormalized)
+
+                            }).map((video) => {
                                 return (
-                                    <a href={video.url}>
+                                    <a key={video.url} href={video.url}>
                                         <img src={video.thumb} />
                                         <span>{video.title}</span>
                                     </a>
