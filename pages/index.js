@@ -87,14 +87,14 @@ function TimeLine(props){
         <StyledTimeline>
             {/* tanto foreach quanto map, são a msm coisa,
              mas o map irá retornar sem nenhum prblema os valores */}
-            {playlistsNames.map((playlistsNames) => {
-                const videos = props.playlist[playlistsNames];
+            {playlistsNames.map((playlistsName) => {
+                const videos = props.playlist[playlistsName];
                 // irá trazer o elemento da chave 'PlaylistsNames'
-                // console.log(playlistsNames)
-                // console.log(videos)                
+                // console.log(playlistsName)
+                // console.log(videos) 
                 return (
                     <section>
-                        <h2>{playlistsNames}</h2>
+                        <h2>{playlistsName}</h2>
                         <div>
                             {videos.map((video) => {
                                 return (
