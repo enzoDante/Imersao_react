@@ -1,5 +1,6 @@
 import React from "react";
 import { StyledRegisterVideo } from "./styles";
+import {createClient} from '@supabase/supabase-js'
 
 //custom Hook
 function useForm(propsDoForm){
@@ -23,11 +24,22 @@ function useForm(propsDoForm){
     };
 }
 
+const PROJECT_URL = "https://xfnzbgbpzfxxhagmqpwl.supabase.co"
+const PUBLIC_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmbnpiZ2JwemZ4eGhhZ21xcHdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjgyODM3MjYsImV4cCI6MTk4Mzg1OTcyNn0.R4EtaMWmeJ8gbP1FVaN59ApYD85YuVel0aEgvUGcT9g"
+const supabase = createClient(PROJECT_URL, PUBLIC_KEY)
+
+//thumbnail de um video pelo seu id
+function getThumbnail(url){
+    return `https://img.youtube.com/vi/${url.split("v=")[1]}/hqdefault.jpg`
+}
+
 export default function RegisterVideo(){
     const formCadastro = useForm({
-        initialValues: {titulo: "titulo test", url: "asdad"}
+        initialValues: {titulo: "titulo test", url: "https://www.youtube.com/watch?v=QsqatJxAUtk"}
     });
     const [formVisivel, setFormVisivel] = React.useState(true) //false
+
+    console.log()
     //botão de evento p chamar essa function
     //modal q tem o form
 
@@ -46,6 +58,19 @@ export default function RegisterVideo(){
                 <form onSubmit={(evento) => {
                     evento.preventDefault();
                     console.log(formCadastro.values)
+
+                    //contrato entre front e back
+                    supabase.from("video").insert({
+                        title: formCadastro.values.titulo,
+                        url: formCadastro.values.url,
+                        thumb: getThumbnail(formCadastro.values.url),
+                        playlist: "jogos",
+                    }).then((oqveio) => {
+                        console.log(oqveio)
+                    }).catch((err) => {
+                        console.log(err)
+                    })
+
                     setFormVisivel(false);
                     formCadastro.clearForm();
 

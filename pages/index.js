@@ -4,6 +4,7 @@ import styled from "styled-components";
 // import { CSSReset } from "../src/components/CSSReset";
 import Menu from "../src/components/Menu/Menu";
 import { StyledTimeline } from "../src/components/Timeline";
+import {videoService} from "../src/services/videoService";
 
 function HomePage(){
     // const estilo = {
@@ -16,10 +17,35 @@ function HomePage(){
     // <Header></Header>
     // <TimeLine></TimeLine>
 
+    const service = videoService()
+
     //ajuda a re-executar as funções
     const [valorDoFiltro, setValorDoFiltro] = React.useState("");
     // const valorDoFiltro = "Frost";
     // console.log(config.playlist);
+    const [playlists, setPlaylists] = React.useState({});
+    React.useEffect(() => {
+        console.log("usou o effect")
+        service.getAllVideos().then((dados) => {
+            // console.log(dados)
+
+            const novasPlaylists = {...playlists}
+            dados.data.forEach((vide) => {
+                //a ? é uma pergunta se tem aquilo, ai se tem, ele faz o push
+                if(!novasPlaylists[vide.playlist]){
+                    novasPlaylists[vide.playlist] = [];
+                }
+                novasPlaylists[vide.playlist].push(vide)
+            })
+            setPlaylists(novasPlaylists)
+        });
+        
+    }, [])
+
+
+    // const playlists = {
+    //     "jogos": [],
+    // }    
 
     return (
         <>
@@ -32,7 +58,7 @@ function HomePage(){
                 {/* Prop Drilling */}
                 <Menu valorDoFiltro={valorDoFiltro} setValorDoFiltro={setValorDoFiltro} />
                 <Header />
-                <TimeLine searchValue={valorDoFiltro} playlist={config.playlists}>
+                <TimeLine searchValue={valorDoFiltro} playlist={playlists}>
                     Conteudo
                 </TimeLine>     
             </div>
@@ -94,7 +120,7 @@ function Header(){
 
 //o valor do filtro e todos os outros valores da propriedades
 function TimeLine({searchValue, ...props}){
-    // console.log("dentro do componente ", props.playlist)
+    // console.log("dentro do componente ", props)
     const playlistsNames = Object.keys(props.playlist)
     // console.log(`nomes aq ${playlistsNames}`)
     return(
